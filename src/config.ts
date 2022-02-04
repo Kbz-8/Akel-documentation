@@ -48,7 +48,7 @@ export const SIDEBAR = {
     { text: 'Message Box', link: 'en/Platform/message_box' },
     { text: 'Inputs', link: 'en/Platform/inputs' },
 
-    { text: 'Languages', header: true, opened: false },
-    { text: 'ELTM', link: 'en/Languages/eltm' },
+    { text: 'Modules', header: true, opened: false },
+    { text: 'ELTM', link: 'en/Modules/eltm' },
   ],
 };
