@@ -20,9 +20,9 @@ class CustomComponent : public Ak::Component
     public:
         void onEvent(Ak::Input& input) override
         {
-            if(input.getInKey(AK_KEY_SPACE, DOWN))
-                Ak::debugPrint("Space key is pressed");
             if(input.getInKey(AK_KEY_SPACE))
+                Ak::debugPrint("Space key is pressed");
+            if(input.getInKey(AK_KEY_SPACE, Ak::action::up))
                 Ak::debugPrint("Space key is released");
         }
 };
@@ -37,18 +37,17 @@ class CustomComponent : public Ak::Component
 |       | <a href="#constructor" style="text-decoration: none;">Input()</a> | 
 |       | <a href="#destructor" style="text-decoration: none;">~Input()</a> | 
 | `void`      | <a href="#update" style="text-decoration: none;">update()</a> |
-| `bool`      | <a href="#getinkeyconst-AK_KEY-touche-enum-buttonaction-type--up" style="text-decoration: none;">getInKey(const AK_KEY touche, enum ButtonACTION type = UP)</a> | `const`
-| `bool`      | <a href="#getinmouseconst-uint8-bouton-enum-buttonaction-type--up" style="text-decoration: none;">getInMouse(const Uint8 bouton, enum ButtonACTION type = UP)</a> | `const`
-| `bool`      | <a href="#getmovmouse" style="text-decoration: none;">getMovMouse()</a> | `const`
-| `int`      | <a href="#getx" style="text-decoration: none;">getX()</a> | `const`
-| `int`      | <a href="#gety" style="text-decoration: none;">getY()</a> | `const`
-| `int`      | <a href="#getxrel" style="text-decoration: none;">getXRel()</a> | `const`
-| `int`      | <a href="#getyrel" style="text-decoration: none;">getYRel()</a> | `const`
-| `void`      | <a href="#activatetextinputbool-activate" style="text-decoration: none;">activateTextInput(bool activate)</a> |
-| `std::string`      | <a href="#gettextentry" style="text-decoration: none;">getTextEntry()</a> |
-| `bool`      | <a href="#isended" style="text-decoration: none;">idEnded()</a> | `const`
-| `void`      | <a href="#finish" style="text-decoration: none;">finish()</a> | 
-| `SDL_Event*`      | <a href="#getnativeevent" style="text-decoration: none;">getNativeEvent()</a> |
+| `bool`      | <a href="#getinkeyconst-ak_key-key-action-type--actiondown" style="text-decoration: none;">getInKey(const AK_KEY key, action type = action::down)</a> | `inline` `const` `noexcept`
+| `bool`      | <a href="#getinmouseconst-uint8_t-button-action-type--actiondown" style="text-decoration: none;">getInMouse(const uint8_t button, action type = action::down)</a> | `inline` `const` `noexcept`
+| `void`      | <a href="#reset" style="text-decoration: none;">reset()</a> | `inline` `noexcept`
+| `bool`      | <a href="#ismousemoving" style="text-decoration: none;">isMouseMoving()</a> | `inline` `const` `noexcept`
+| `int`       | <a href="#getx" style="text-decoration: none;">getX()</a> | `inline` `const` `noexcept`
+| `int`       | <a href="#gety" style="text-decoration: none;">getY()</a> | `inline` `const` `noexcept`
+| `int`       | <a href="#getxrel" style="text-decoration: none;">getXRel()</a> | `inline` `const` `noexcept`
+| `int`       | <a href="#getyrel" style="text-decoration: none;">getYRel()</a> | `inline` `const` `noexcept`
+| `bool`      | <a href="#isended" style="text-decoration: none;">idEnded()</a> | `inline` `const` `noexcept`
+| `void`      | <a href="#finish" style="text-decoration: none;">finish()</a> | `inline` `constexpr` `const` `noexcept`
+| `SDL_Event*`      | <a href="#getnativeevent" style="text-decoration: none;">getNativeEvent()</a> |`inline` `const` `noexcept`
 
 ### Constructor
 
@@ -107,7 +106,7 @@ void update();
 
 ---
 
-### getInKey(const AK_KEY touche, enum ButtonACTION type = UP)
+### getInKey(const AK_KEY key, action type = action::down)
 
 ---
 
@@ -116,18 +115,18 @@ If no action is specified (UP or DOWN) the function returns if the key is releas
 
 ```cpp
 // Prototype
-bool getInKey(const AK_KEY touche, enum ButtonACTION type = UP) const;
+inline bool getInKey(const SDL_Scancode key, action type = action::down) const noexcept { return type == action::down ? _keys[key].first : _keys[key].second; }
 
 // Usage
-if(input.getInKey(AK_KEY_SPACE, DOWN))
-    Ak::debugPrint("Space key is pressed");
 if(input.getInKey(AK_KEY_SPACE))
+    Ak::debugPrint("Space key is pressed");
+if(input.getInKey(AK_KEY_SPACE, Ak::action::up))
     Ak::debugPrint("Space key is released");
 ```
 
 ---
 
-### getInMouse(const Uint8 bouton, enum ButtonACTION type = UP)
+### getInMouse(const uint8_t button, action type = action::down)
 
 ---
 
@@ -136,18 +135,35 @@ If no action is specified (UP or DOWN) the function returns if the mouse button 
 
 ```cpp
 // Prototype
-bool getInMouse(const Uint8 bouton, enum ButtonACTION type = UP) const;
+inline bool getInMouse(const uint8_t button, action type = action::down) const noexcept { return type == action::down ? _mouse[button].first : _mouse[button].second; }
 
 // Usage
-if(input.getInMouse(0, DOWN))
+if(input.getInMouse(0))
     Ak::debugPrint("Left click pressed");
-if(input.getInKey(0))
+if(input.getInKey(0, Ak::action::up))
     Ak::debugPrint("Left click released");
 ```
 
 ---
 
-### getMovMouse()
+### reset()
+
+---
+
+```cpp
+// Prototype
+inline void reset() noexcept;
+
+// Usage
+
+// You are not supposed to use this method.
+// Akel updates the input system automatically
+// when your program is running.
+```
+
+---
+
+### isMouseMoving()
 
 ---
 
@@ -155,10 +171,10 @@ Returns a boolean value if the mouse is moving.
 
 ```cpp
 // Prototype
-bool getMovMouse() const;
+inline bool isMouseMoving() const noexcept { return _xRel || _yRel ? true : false; }
 
 // Usage
-if(input.getMovMouse())
+if(input.isMouseMoving())
     Ak::debugPrint("Mouse is moving");
 ```
 
@@ -172,7 +188,7 @@ Returns the X coordinate of the mouse.
 
 ```cpp
 // Prototype
-int getX() const;
+inline int getX() const noexcept { return _x; }
 
 // Usage
 Ak::debugPrint(input.getX());
@@ -188,7 +204,7 @@ Returns the Y coordinate of the mouse.
 
 ```cpp
 // Prototype
-int getY() const;
+inline int getY() const noexcept { return _y; }
 
 // Usage
 Ak::debugPrint(input.getY());
@@ -204,7 +220,7 @@ Returns the X movement of the mouse.
 
 ```cpp
 // Prototype
-int getXRel() const;
+inline int getXRel() const noexcept { return _xRel; }
 
 // Usage
 Ak::debugPrint(input.getXRel());
@@ -220,42 +236,10 @@ Returns the Y movement of the mouse.
 
 ```cpp
 // Prototype
-int getYRel() const;
+inline int getYRel() const noexcept { return _yRel; }
 
 // Usage
 Ak::debugPrint(input.getYRel());
-```
-
----
-
-### activateTextInput(bool activate)
-
----
-
-Activates the text entry system.
-
-```cpp
-// Prototype
-void activateTextInput(bool activate);
-
-// Usage
-input.activateTextInput(true);
-```
-
----
-
-### getTextEntry()
-
----
-
-Returns the text entry.
-
-```cpp
-// Prototype
-std::string getTextEntry();
-
-// Usage
-Ak::debugPrint(input.getTextEntry());
 ```
 
 ---
@@ -268,7 +252,7 @@ Returns a boolean value if the end of the application was sent to the input syst
 
 ```cpp
 // Prototype
-bool isEnded() const;
+inline bool isEnded() const noexcept { return _end; }
 
 // Usage
 if(input.isEnded())
@@ -285,7 +269,7 @@ Ask the input system to close the application.
 
 ```cpp
 // Prototype
-void finish();
+inline constexpr void finish() noexcept { _end = true; }
 
 // Usage
 input.finish();
@@ -301,7 +285,7 @@ Returns the SDL2 native event pointer.
 
 ```cpp
 // Prototype
-SDL_Event* getNativeEvent();
+inline SDL_Event* getNativeEvent() noexcept { return &_event; }
 
 // Usage
 SDL_Event* event = input.getNativeEvent();
